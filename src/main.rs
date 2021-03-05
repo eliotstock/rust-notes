@@ -10,6 +10,8 @@ fn main() {
     chapter03_section03(1);
 
     chapter03_section05();
+
+    chapter04_section01();
 }
 
 // Variables and mutability
@@ -178,4 +180,86 @@ fn chapter03_section05() {
     for n in (1..10).rev() {
         println!("{}", n);
     }
+}
+
+// Ownership
+fn chapter04_section01() {
+    // A string literal is stored on the stack and is immutable.
+    let stack_string = "foo";
+
+    // A String instance is stored on the heap and can be mutable.
+    let mut heap_string = String::from("bar");
+    heap_string.push_str(" baz");
+
+    println!("Strings: {}, {}", stack_string, heap_string);
+
+    // At the end of the current block (function, in this case),
+    // heap_string goes out of scope, Rust calls drop() on it, and
+    // the heap memory is freed. We don't have to explicitly
+    // deallocate it.
+
+    // Another string instance has a copy of the stuff on the stack,
+    // but points to the same memory on the heap.
+    let heap_string2 = heap_string;
+
+    // But Rust also invalidates heap_string to prevent a double free
+    // error when both variables go out of scope.
+    // heap_string has "moved" into heap_string2.
+    println!("String: {}", heap_string2);
+
+    // Using heap_string here would be an error ("value borroed here
+    // after move")
+    // println!("String: {}", heap_string);
+
+    // Use clone() to make a copy of the heap data, not just the
+    // stack data.
+    let heap_string3 = heap_string2.clone();
+
+    println!("String: {}", heap_string3);
+
+    // If a type implements the Copy trait, the old variable is still
+    // OK to use after the new one is assigned to it. You can't mix
+    // the Copy and Drop traits.
+
+    // Calling functions works like assignment.
+    // Passing a String will take ownership. heap_string3 can't be
+    // used after this.
+    chapter04_section01_takes_ownership(heap_string3);
+
+    // Passing an integer makes a copy.
+    let x = 1;
+    chapter04_section01_makes_copy(x);
+
+    // It's fine to use x after this.
+    println!("Integer: {}", x);
+
+    // Functions move their ownership out when returning a value.
+    let s = chapter04_section01_gives_ownership();
+
+    println!("String: {}", s);
+
+    // Functions take ownership when we pass them Strings.
+    let t = takes_and_gives_back(s);
+
+    println!("String: {}", t);
+}
+
+fn chapter04_section01_takes_ownership(s: String) {
+    println!("{}", s);
+    // Drop is called here.
+}
+
+fn chapter04_section01_makes_copy(i: i32) {
+    println!("{}", i);
+}
+
+fn chapter04_section01_gives_ownership() -> String {
+    let s = String::from("hello");
+    // Returning s moves it to the calling function.
+    s
+}
+
+fn takes_and_gives_back(s: String) -> String {
+    // Returning s moves it to the calling function.
+    s
 }
