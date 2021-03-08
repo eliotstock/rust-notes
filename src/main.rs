@@ -239,9 +239,36 @@ fn chapter04_section01() {
     println!("String: {}", s);
 
     // Functions take ownership when we pass them Strings.
-    let t = takes_and_gives_back(s);
+    let t = chapter04_section01_takes_and_gives_back(s);
 
     println!("String: {}", t);
+
+    // References, denoted with &, allow you to pass around a value
+    // without transfering ownership of it.
+    let l = chapter04_section01_borrows(&t);
+
+    println!("String length: {}", l);
+
+    // Mutable references can have their values modified.
+    let mut m = String::from("foo");
+
+    chapter04_section01_borrows_as_mutable(&mut m);
+
+    // You can have only one mutable reference to a particular piece
+    // of data in a particular scope. This allows Rust to prevent
+    // data races at compile time. A data race could happen if:
+    //   * Two pointers access the same data at the same time
+    //   * At least one is being used to write
+    //   * There's no synchronisation
+    // To get a second mutable reference, just create a new scope.
+
+    // Rust prevents dangling references, where the memory has been
+    // freed but the pointer remains in use. If a variable goes out
+    // of scope but the reference doesn't, you'll get an error.
+
+    // At any given time, you can have either one mutable reference
+    // or any number of immutable references.
+    // References must always be valid.
 }
 
 fn chapter04_section01_takes_ownership(s: String) {
@@ -259,7 +286,20 @@ fn chapter04_section01_gives_ownership() -> String {
     s
 }
 
-fn takes_and_gives_back(s: String) -> String {
+fn chapter04_section01_takes_and_gives_back(s: String) -> String {
     // Returning s moves it to the calling function.
     s
+}
+
+fn chapter04_section01_borrows(s: &String) -> usize {
+    // We can't modify a borrowed value. This would give an error:
+    // s.push_str(" bar");
+
+    s.len()
+    // s is not dropped here, because we're only passed a reference.
+}
+
+fn chapter04_section01_borrows_as_mutable(s: &mut String) {
+    // We can modify the value for a mutable reference.
+    s.push_str(" bar");
 }
