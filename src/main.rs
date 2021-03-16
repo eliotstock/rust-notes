@@ -2,6 +2,8 @@
 // `cargo run`.
 // See: https://doc.rust-lang.org/book
 
+use std::any::type_name;
+
 fn main() {
     // Forward declarations are fine.
     chapter03_section02();
@@ -11,7 +13,9 @@ fn main() {
 
     chapter03_section05();
 
-    chapter04_section01();
+    chapter04();
+
+    chapter05();
 }
 
 // Variables and mutability
@@ -183,7 +187,7 @@ fn chapter03_section05() {
 }
 
 // Ownership
-fn chapter04_section01() {
+fn chapter04() {
     // A string literal is stored on the stack and is immutable.
     let stack_string = "foo";
 
@@ -224,35 +228,35 @@ fn chapter04_section01() {
     // Calling functions works like assignment.
     // Passing a String will take ownership. heap_string3 can't be
     // used after this.
-    chapter04_section01_takes_ownership(heap_string3);
+    chapter04_takes_ownership(heap_string3);
 
     // Passing an integer makes a copy.
     let x = 1;
-    chapter04_section01_makes_copy(x);
+    chapter04_makes_copy(x);
 
     // It's fine to use x after this.
     println!("Integer: {}", x);
 
     // Functions move their ownership out when returning a value.
-    let s = chapter04_section01_gives_ownership();
+    let s = chapter04_gives_ownership();
 
     println!("String: {}", s);
 
     // Functions take ownership when we pass them Strings.
-    let t = chapter04_section01_takes_and_gives_back(s);
+    let t = chapter04_takes_and_gives_back(s);
 
     println!("String: {}", t);
 
     // References, denoted with &, allow you to pass around a value
     // without transfering ownership of it.
-    let l = chapter04_section01_borrows(&t);
+    let l = chapter04_borrows(&t);
 
     println!("String length: {}", l);
 
     // Mutable references can have their values modified.
     let mut m = String::from("foo");
 
-    chapter04_section01_borrows_as_mutable(&mut m);
+    chapter04_borrows_as_mutable(&mut m);
 
     // You can have only one mutable reference to a particular piece
     // of data in a particular scope. This allows Rust to prevent
@@ -269,29 +273,46 @@ fn chapter04_section01() {
     // At any given time, you can have either one mutable reference
     // or any number of immutable references.
     // References must always be valid.
+
+    // Use the range operator to get a string slice from a string.
+    // The start index is zero based and the end index is one after
+    // the last included character.
+    let s = String::from("hello world");
+    let slice1 = &s[0..5];
+
+    // You can omit either the start index if it's zero or the end
+    // index if it's the end of the string.
+    let slice2 = &s[..5];
+    let slice3 = &s[6..];
+
+    println!("Slices: {}, {}, {}", slice1, slice2, slice3);
+
+    // The type of a slice is &str. String literals are actually
+    // slices. We prefer to use &str in method signatures rather
+    // than String.
 }
 
-fn chapter04_section01_takes_ownership(s: String) {
+fn chapter04_takes_ownership(s: String) {
     println!("{}", s);
     // Drop is called here.
 }
 
-fn chapter04_section01_makes_copy(i: i32) {
+fn chapter04_makes_copy(i: i32) {
     println!("{}", i);
 }
 
-fn chapter04_section01_gives_ownership() -> String {
+fn chapter04_gives_ownership() -> String {
     let s = String::from("hello");
     // Returning s moves it to the calling function.
     s
 }
 
-fn chapter04_section01_takes_and_gives_back(s: String) -> String {
+fn chapter04_takes_and_gives_back(s: String) -> String {
     // Returning s moves it to the calling function.
     s
 }
 
-fn chapter04_section01_borrows(s: &String) -> usize {
+fn chapter04_borrows(s: &String) -> usize {
     // We can't modify a borrowed value. This would give an error:
     // s.push_str(" bar");
 
@@ -299,7 +320,91 @@ fn chapter04_section01_borrows(s: &String) -> usize {
     // s is not dropped here, because we're only passed a reference.
 }
 
-fn chapter04_section01_borrows_as_mutable(s: &mut String) {
+fn chapter04_borrows_as_mutable(s: &mut String) {
     // We can modify the value for a mutable reference.
     s.push_str(" bar");
+}
+
+// Structs and methods
+
+// Structs have fields and are defined like this (nevermind the
+// annotation for now).
+#[derive(Debug)]
+struct User {
+    username: String,
+    email: String,
+    sign_in_count: u64,
+    active: bool,
+}
+
+// Tuple structs have a name for the type, but not for each field.
+// Two tuple structs with all the same fields types are not
+// interchangeable - they're different types.
+struct Color(i32, i32, i32);
+
+// Unit-like structs don't have any fields and behave similarly to
+// (), the unit type.
+struct UnitLike();
+
+// Methods are like functions, but within the scope of a struct, enum
+// or trait and they take &self as the first parameter. They go in an
+// implementation block, not the struct definition itself.
+
+impl User {
+    fn sign_out(&self) {
+        println!("Signed out: {}", self.username);
+    }
+}
+
+fn chapter05() {
+    // Create an instance of a struct like this.
+    let u = User {
+        email: String::from("someone@example.com"),
+        username: String::from("someusername123"),
+        active: true,
+        sign_in_count: 1,
+    };
+
+    // Use the {:?} specifier to call the Debug output format.
+    println!("Struct instance: {:?}", u);
+
+    // Call methods as expected.
+    u.sign_out();
+
+    // The entire instance is mutable or not - you can't mark
+    // individual fields as mutable.
+
+    let u2 = chapter05_build_user(String::from("a@b.net"),
+        String::from("foo"));
+
+    println!("Struct instance field: {}", u2.email);
+
+    // Use struct update syntax to create a new instance that is
+    // mostly the same as another instance.
+    let u3 = User {
+        email: String::from("another@example.com"),
+        username: String::from("anotherusername567"),
+        ..u2
+    };
+
+    println!("Struct instance field: {}", u3.email);
+
+    // Instatiate a tuple struct like this.
+    let t = Color(0, 0, 0);
+
+    println!("Tuple struct instance field: {}", t.0);
+
+    // Unit-like struct usage to prevent compilation warnings only.
+    println!("Tuple struct instance field: {}",
+        type_name::<UnitLike>());
+}
+
+// Field init shorthand syntax. No need for "email: email".
+fn chapter05_build_user(email: String, username: String) -> User {
+    User {
+        email,
+        username,
+        active: true,
+        sign_in_count: 1,
+    }
 }
