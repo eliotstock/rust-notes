@@ -348,11 +348,22 @@ struct UnitLike();
 
 // Methods are like functions, but within the scope of a struct, enum
 // or trait and they take &self as the first parameter. They go in an
-// implementation block, not the struct definition itself.
+// implementation block, not the struct definition itself. You can
+// have mulitple impl blocks for a given struct.
 
 impl User {
+    // Methods can:
+    //   1. take ownership of self: self
+    //   2. borrow self immutably: &self
+    //   3. borrow self mutably: &mut self
     fn sign_out(&self) {
         println!("Signed out: {}", self.username);
+    }
+
+    // Associated functions are like static methods in Java - you
+    // don't need an instance to call them on.
+    fn foo() {
+        println!("Associated function invoked.");
     }
 }
 
@@ -368,8 +379,13 @@ fn chapter05() {
     // Use the {:?} specifier to call the Debug output format.
     println!("Struct instance: {:?}", u);
 
-    // Call methods as expected.
+    // Call methods as expected. There's no need for the -> like in
+    // C or C++ because Rust does automatic referencing and
+    // dereferencing.
     u.sign_out();
+
+    // Call associated functions using ::.
+    User::foo();
 
     // The entire instance is mutable or not - you can't mark
     // individual fields as mutable.
