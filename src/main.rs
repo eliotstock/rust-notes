@@ -16,6 +16,8 @@ fn main() {
     chapter04();
 
     chapter05();
+
+    chapter06();
 }
 
 // Variables and mutability
@@ -422,5 +424,91 @@ fn chapter05_build_user(email: String, username: String) -> User {
         username,
         active: true,
         sign_in_count: 1,
+    }
+}
+
+// Enums and pattern matching
+
+fn chapter06() {
+    // Simple enum:
+    #[derive(Debug)]
+    enum Operation {
+        Set,
+        Check,
+    }
+
+    // Enums can have associated values. Each value can take
+    // different types.
+    #[derive(Debug)]
+    enum OperationWithLabel {
+        Set(String),
+        Check(u32),
+    }
+
+    // Enums can have methods, too.
+    impl Operation {
+        fn execute(&self) {
+            println!("Operation executed.");
+        }
+    }
+
+    // Use of a simple enum variant:
+    let op1 = Operation::Set;
+    let op2 = Operation::Check;
+    println!("Enum variants: {:?}, {:?}", op1, op2);
+
+    // Use of an enum variant that takes an associated value:
+    let op3 = OperationWithLabel::Set(String::from("set"));
+    let op4 = OperationWithLabel::Check(100);
+    println!("Enum variants: {:?}, {:?}", op3, op4);
+
+    // Calling a method on an enum variant:
+    op1.execute();
+
+    // The Option enum in the standard library is so common that you
+    // don't need to bring it into scope. Its variants are Some and
+    // None. With None, we need to specify the type of which we have
+    // no value.
+    let a = Some(1);
+    let b: Option<u32> = None;
+    println!("Some and none: {:?}, {:?}", a, b);
+
+    // The patterns for each arm of a "match" expression can be any
+    // type, whereas an "if" needs bools. Only the first arm to match
+    // will be executed.
+    match op1 {
+        Operation::Set => {
+            println!("set");
+        },
+        Operation::Check => {
+            println!("check");
+        }
+    }
+
+    // Patterns can also bind to values, so that we can use the value
+    // in the arm. Matches are exhaustive: we must cover every
+    // possible pattern.
+    let c: Option<u32> = match a {
+        None => None,
+        Some(i) => Some(i + 1),
+    };
+
+    println!("c is some: {}", c.is_some());
+
+    // The _ placeholder will match all values not explicitly
+    // specified before it.
+    let some_u8_value = 0u8;
+
+    match some_u8_value {
+        1 => println!("one"),
+        3 => println!("three"),
+        5 => println!("five"),
+        7 => println!("seven"),
+        _ => (), // The "unit value".
+    }
+
+    // If we only care about one of the cases, use "if let".
+    if let Some(2) = c {
+        println!("c is 2");
     }
 }
