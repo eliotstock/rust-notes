@@ -18,6 +18,8 @@ fn main() {
     chapter05();
 
     chapter06();
+
+    chapter07();
 }
 
 // Variables and mutability
@@ -507,8 +509,34 @@ fn chapter06() {
         _ => (), // The "unit value".
     }
 
-    // If we only care about one of the cases, use "if let".
+    // If we only care about one of the arms, use "if let".
     if let Some(2) = c {
         println!("c is 2");
     }
+}
+
+// Packages, crates and modules
+
+// Binary crate root: src/main.rs
+// Library crate root: src/lib.rs
+// Other binary crates: src/bin/foo.rs
+
+// Modules can be nested:
+mod parent {
+    // The "pub" keyword is required if the module is to be called
+    // from outside code.
+    pub mod child_one {
+        pub fn foo() {
+            bar();
+        }
+        fn bar() {}
+    }
+    mod child_two {
+        fn a() {}
+        fn b() {}
+    }
+}
+
+fn chapter07() {
+    parent::child_one::foo();
 }
