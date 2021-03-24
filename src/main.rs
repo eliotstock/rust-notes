@@ -521,22 +521,74 @@ fn chapter06() {
 // Library crate root: src/lib.rs
 // Other binary crates: src/bin/foo.rs
 
-// Modules can be nested:
+// Modules can be nested.
+// Everything is private by default. Use "pub" to make it public.
+// Child modules can use things in their parent modules even if
+// they're private - just like variable scope and blocks.
+// Functions, methods, structs, enums, modules, and constants all
+// are either public or private.
+// Making a struct public doesn't make all the fields public.
+// Making an enum public, however, makes all of its variants public.
+// When using a function, bring its whole module into scope so that
+// the module it's in is clear in client code.
+// For everything else (structs, enums, etc.) just bring the thing
+// itself into scope.
 mod parent {
-    // The "pub" keyword is required if the module is to be called
-    // from outside code.
+
     pub mod child_one {
         pub fn foo() {
             bar();
         }
-        fn bar() {}
+        fn bar() {
+            super::child_two::a();
+        }
     }
+
     mod child_two {
-        fn a() {}
+        pub fn a() {
+            b();
+        }
         fn b() {}
     }
+
+    // Use "pub use" to re-export something. This brings an item into
+    // scope but also make it available for client code.
+    pub use std::io::Result;
 }
 
+// To "use" anything from crates.io, also add it to the Cargo.toml
+// file in the [dependencies] section:
+// Cargo.toml:
+//   [dependencies]
+//   rand = "0.5.5"
+// *.rs:
+//   use rand::Rng;
+// The standard library is also a crate, but one that doesn't need
+// to be listed in Cargo.toml.
+
+// To distinguish between two things with the same name, use "as":
+// use std::fmt::Result;
+// use std::io::Result as IoResult;
+
+// Use nested paths to compress long lists of things to use. Rather
+// than:
+//   use std::cmp::Ordering;
+//   use std::io;
+// Do this:
+//   use std::{cmp::Ordering, io};
+
+// There's also a glob operator:
+//   use std::collections::*;
+
+// To bring in code from src/foo.rs:
+//   mod foo;
+
 fn chapter07() {
+    // Paths in the module tree:
+
+    // Relative path:
     parent::child_one::foo();
+
+    // Absolute path:
+    crate::parent::child_one::foo();
 }
