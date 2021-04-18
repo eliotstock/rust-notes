@@ -20,6 +20,8 @@ fn main() {
     chapter06();
 
     chapter07();
+
+    chapter08();
 }
 
 // Variables and mutability
@@ -591,4 +593,54 @@ fn chapter07() {
 
     // Absolute path:
     crate::parent::child_one::foo();
+}
+
+fn chapter08() {
+    // Collections are stored on the heap.
+
+    // Vectors can take a type using generics...
+    let mut v: Vec<i32> = Vec::new();
+    // println!("v.len(): {}", v.len());
+
+    // ...or infer the type from some initial values:
+    let w = vec![1, 2, 3];
+    println!("w.len(): {}", w.len());
+
+    // Use push() to add elements.
+    v.push(1);
+
+    // To access elements:
+
+    // Either use indexing syntax, which will panic on an out of
+    // bounds index (which might be what you want)...
+    println!("Third element: {}", &w[2]);
+
+    // ...or the get method, which will only return None, which you
+    // then need to handle.
+    println!("Third element: {}", w.get(2).unwrap());
+
+    // To iterate over a vector without making changes to elements:
+    for i in &v {
+        println!("{}", i);
+    }
+
+    // Or, with making changes:
+    for i in &mut v {
+        // Dereference:
+        *i += 1;
+    }
+
+    // Use pop() to remove and return the last element:
+    println!("Last element: {}", v.pop().unwrap());
+
+    // When a vector goes out of scope it's dropped. So are all its
+    // elements.
+
+    // You can’t have mutable and immutable references in the same
+    // scope, so getting an immutable reference to an element means
+    // you can no longer modify the vector, even at the end.
+
+    // If the elements in a vector might be one of a few different
+    // types, consider using an enum with variants for each type and
+    // storing that.
 }
