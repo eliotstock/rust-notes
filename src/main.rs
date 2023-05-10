@@ -197,7 +197,9 @@ fn chapter04() {
     // A string literal is stored on the stack and is immutable.
     let stack_string = "foo";
 
-    // A String instance is stored on the heap and can be mutable.
+    // A String instance is stored on the heap and can be mutable. It
+    // also has some stuff on the stack: size, capacity and a pointer
+    // to the heap space.
     let mut heap_string = String::from("bar");
     heap_string.push_str(" baz");
 
@@ -213,8 +215,8 @@ fn chapter04() {
     let heap_string2 = heap_string;
 
     // But Rust also invalidates heap_string to prevent a double free
-    // error when both variables go out of scope.
-    // heap_string has "moved" into heap_string2.
+    // error when both variables go out of scope. heap_string has
+    // "moved" into heap_string2.
     println!("String: {}", heap_string2);
 
     // Using heap_string here would be an error ("value borroed here
@@ -254,7 +256,8 @@ fn chapter04() {
     println!("String: {}", t);
 
     // References, denoted with &, allow you to pass around a value
-    // without transfering ownership of it.
+    // without transfering ownership of it. You can read the & as
+    // "reference to".
     let l = chapter04_borrows(&t);
 
     println!("String length: {}", l);
