@@ -363,7 +363,7 @@ impl User {
     //   2. borrow self immutably: &self
     //   3. borrow self mutably: &mut self
     fn sign_out(&self) {
-        println!("Signed out: {}", self.username);
+        println!("Signed out: {} ({}, {})", self.username, self.sign_in_count, self.active);
     }
 
     // Associated functions are like static methods in Java - you
