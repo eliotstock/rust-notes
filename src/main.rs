@@ -32,7 +32,7 @@ fn chapter03_section02() {
 
     println!("Variables: {}, ", x);
 
-    // Constants can only be set to a constant experssion, not to the
+    // Constants can only be set to a constant expression, not to the
     // result of a function call.
     const CONST_THING: u32 = 10_000;
 
@@ -95,7 +95,7 @@ fn chapter03_section02() {
     //     Prefer std::vec::Vec in most cases.
     let a = [1, 2, 3, 4, 5];
     //     The type and size aren't required.
-    let a_prime: [i32;5] = [1, 2, 3, 4, 5];
+    let a_prime: [i32; 5] = [1, 2, 3, 4, 5];
     //     Initialise an array that contains the same value for each
     //       element:
     let d = [3; 5];
@@ -219,7 +219,7 @@ fn chapter04() {
     // "moved" into heap_string2.
     println!("String: {}", heap_string2);
 
-    // Using heap_string here would be an error ("value borroed here
+    // Using heap_string here would be an error ("value borrowed here
     // after move")
     // println!("String: {}", heap_string);
 
@@ -284,7 +284,7 @@ fn chapter04() {
     // References must always be valid.
 
     // Use the range operator to get a string slice from a string.
-    // The start index is zero based and the end index is one after
+    // The start index is zero-based and the end index is one after
     // the last included character.
     let s = String::from("hello world");
     let slice1 = &s[0..5];
